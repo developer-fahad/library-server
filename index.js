@@ -38,14 +38,29 @@ async function run() {
     // await client.connect();
 
     const categoryCollection = client.db('libraryManagerDB').collection('categories');
+    const booksCollection = client.db('libraryManagerDB').collection('books');
 
 
+    // Category Api for all category section on Homepage
     app.get('/categories', async(req, res) =>{
       const cursor = categoryCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     })
 
+    // Books Api
+    app.get('/books', async(req, res) =>{
+      const cursor = booksCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+
+    app.post('/books', async(req, res) =>{
+      const newBooks = req.body;
+      const result = await booksCollection.insertOne(newBooks);
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
