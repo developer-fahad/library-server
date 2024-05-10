@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -47,6 +47,7 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     })
+    
 
     // Books Api
     app.get('/books', async(req, res) =>{
@@ -56,11 +57,38 @@ async function run() {
     })
 
 
+    app.get('/books/:id', async(req, res) =>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await booksCollection.findOne(query)
+      res.send(result)
+    })
+
+
     app.post('/books', async(req, res) =>{
       const newBooks = req.body;
       const result = await booksCollection.insertOne(newBooks);
       res.send(result);
     })
+
+    app.patch('/books/:id', async(req, res) =>{
+      const id = req.params.id;
+      const updatedBook = req.body;
+      const filter = {_id: new ObjectId(id)};
+      const options = {upsert: true};
+      const book = {
+        $set: {
+          name: updatedBook.name,
+          category: updatedBook.category,
+          rating: updatedBook.rating,
+          photo: updatedBook.photo,
+          author: updatedBook.author,
+        }
+      }
+      const result = await booksCollection.updateOne(filter, book, options);
+      res.send(result)
+
+     })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
