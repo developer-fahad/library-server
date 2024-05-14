@@ -114,11 +114,7 @@ async function run() {
       res.send(result)
     })
 
-    app.post('/books', async(req, res) =>{
-      const newBooks = req.body;
-      const result = await booksCollection.insertOne(newBooks);
-      res.send(result);
-    })
+    
 
     app.patch('/books/:id', async(req, res) =>{
       const id = req.params.id;
